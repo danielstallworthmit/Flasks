@@ -1,9 +1,26 @@
 from flask import Flask, render_template, redirect, url_for, request
 from flask_modus import Modus # To enable patch
-import db
+from flask_sqlalchemy import SQLAlchemy
+# import db
 
 app = Flask(__name__)
 modus = Modus(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://localhost/computers-db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+class Computer(db.Model):
+    __tablename__ = 'computers'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text)
+    memory_in_gb = db.Column(db.Integer)
+
+    def __init__(self, name, memory_in_gb):
+        self.name = name
+        self.memory_in_gb = memory_in_gb
+    def __repr__(self):
+        return "This {} has {} GB of memory".format(self.name, self.memory_in_gb)
+
 
 @app.route('/toys',methods=['GET','POST'])
 def index():
